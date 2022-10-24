@@ -8,15 +8,16 @@ function cat(path) {
             console.log("Error: ", err)
             process.kill(1)
         }
-        console.log("cat(data)="+data)
-        return (data)
+        console.log(`cat ${data}`)
+        return data
     })
 }
 
 function webCat(url) {
     readURL(url)
         .then((resp) => {
-            return (resp.data)
+            console.log(`webCat ${resp.url}`)
+            return resp.data
         })
         .catch((err) => {
             console.log(err)
@@ -31,17 +32,37 @@ async function readURL(url) {
 function argCheck(arg) {
     String(arg)
     if (arg.includes('://')) {
-        const data=webCat(arg)
-        console.log(data)
+        const data = webCat(arg)
+        console.log(`argCheck web ${String(data)}`)
     }
     else {
         const data = cat(arg)
-        console.log(data)
+        console.log(`argCheck file ${String(data)}`)
+    }
+}
+
+function argCheckWrite(arg) {
+    String(arg)
+    if (arg.includes('://')) {
+        const data = webCat(arg)
+        console.log(`argCheckWrite web ${data}`)
+        return String(data)
+    }
+    else {
+        const data = cat(arg)
+        console.log(`argCheckWrite file ${data} `)
+        return String(data)
     }
 }
 
 function writeToFile() {
-    fs.writeFile(process.argv[4],)
+    console.log('writeToFile')
+    fs.writeFile(argv[3], argCheckWrite(argv[4]), 'utf8', (err) => {
+        if (err) {
+            console.log("Error:", err)
+        }
+        console.log("Wrote to file!")
+    })
 }
 
 function printOrFile(arg) {
@@ -51,4 +72,6 @@ function printOrFile(arg) {
     else { argCheck(arg) }
 }
 
-printOrFile(process.argv[2])
+const argv = process.argv
+console.log(argv)
+printOrFile(argv[2])
